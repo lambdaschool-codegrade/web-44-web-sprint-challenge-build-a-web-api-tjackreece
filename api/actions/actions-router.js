@@ -1,9 +1,8 @@
 const express = require("express");
 const Action = require("./actions-model");
-// Write your "actions" router here!
+
 const router = express.Router();
 
-// [GET]
 router.get("/api/actions", (req, res, next) => {
 	Action.get()
 		.then((actions) => {

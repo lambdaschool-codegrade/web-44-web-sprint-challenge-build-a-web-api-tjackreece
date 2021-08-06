@@ -1,4 +1,3 @@
-// add middlewares here related to projects
 const Project = require("./projects-model");
 
 const checkDatabase = async (req, res, next) => {

@@ -12,15 +12,12 @@ server.use(express.json());
 server.use(helmet());
 server.use(cors());
 
-// server error middleware
 server.use((err, req, res, next) => {
 	// eslint-disable-line
-	res
-		.status(500)
-		.json({
-			error: err.message,
-			message: "Something happened with the server",
-		});
+	res.status(500).json({
+		error: err.message,
+		message: "Something happened with the server",
+	});
 });
 
 // routers

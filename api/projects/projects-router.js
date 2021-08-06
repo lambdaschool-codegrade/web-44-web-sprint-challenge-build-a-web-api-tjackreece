@@ -1,9 +1,8 @@
 const express = require("express");
 const Project = require("./projects-model");
-// Write your "projects" router here!
+
 const router = express.Router();
 
-// [GET]
 router.get("/api/projects", (req, res, next) => {
 	Project.get()
 		.then((projects) => {
