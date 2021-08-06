@@ -1,36 +1,21 @@
-const express = require("express");
-const helmet = require("helmet");
-const cors = require("cors");
-
-const actionsRouter = require("./actions/actions-router");
-const projectsRouter = require("./projects/projects-router");
-
+require('dotenv').config();
+const express = require('express');
 const server = express();
+const helmet = require("helmet")
+const projectsRouter = require("./projects/projects-router")
+const actionsRouter = require("./actions/actions-router")
 
-// middlewares
-server.use(express.json());
-server.use(helmet());
-server.use(cors());
-
-server.use((err, req, res, next) => {
-	// eslint-disable-line
-	res.status(500).json({
-		error: err.message,
-		message: "Something happened with the server",
-	});
-});
-
-// routers
+server.use(express.json())
+server.use(helmet())
 server.use("/api/actions", actionsRouter);
 server.use("/api/projects", projectsRouter);
 
-// defaults
-server.use("/api", (_, res) => {
-	res.json({ data: "API is accounted for" });
+
+
+
+server.get("*", (req, res) => {
+  res.send(`<h2>Let's write some middleware!</h2>`);
 });
 
-server.use("/", (req, res) => {
-	res.send(`<h2>Welcome to our API!</h2>`);
-});
 
 module.exports = server;

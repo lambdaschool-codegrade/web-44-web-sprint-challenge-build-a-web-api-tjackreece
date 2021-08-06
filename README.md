@@ -153,7 +153,17 @@ We have provided test data for all the resources.
 Be prepared to demonstrate your understanding of this week's concepts by answering questions on the following topics. You might prepare by writing down your own answers before hand.
 
 1. The core features of Node.js and Express and why they are useful.
+Node.js is javascript software that enables you to build applications.
+Express allows the developer to carry out  specific operations called "middleware operations" on data as it is being sent between the server and user.
+
 1. Understand and explain the use of Middleware.
+Middleware are functions that enable the developer to manipulate the data as it moves between the user and the server.
+
 1. The basic principles of the REST architectural style.
+REst stands for Representational State Transfer. It is a way to design applications that work together. 
+
 1. Understand and explain the use of Express Routers.
+Express Routers let you split up your code into much more managable size files. These create endpoints which is a way for the user to interact with the database. 
+
 1. Describe tooling used to manually test the correctness of an API.
+To check an api you can use the built in tooling available in VScode. This lets you put in debuggers that enable you to check what the program is doing at certain points.

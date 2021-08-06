@@ -1,47 +1,55 @@
-const Action = require("./actions-model");
-const Project = require("../projects/projects-model");
-//c
-const checkDatabase = async (req, res, next) => {
-	const id = req.params.id;
+// add middlewares here related to actions
+const  { get } = require("./actions-model");
 
-	try {
-		const action = await Action.get(id);
-		if (action) {
-			req.action = action;
-			next();
-		} else {
-			res.status(404).json({
-				message: `Action with id ${id} not found`,
-			});
-		}
-	} catch (err) {
-		next(err);
-	}
-};
+async function validateActionId(req, res, next) {
+  get(req.params.id)
+    .then((action) => {
+      if (action) {
+        req.action = action;
+        next();
+      } else {
+        next({
+          status: 404,
+          message: "action not found",
+        });
+      }
+    })
+    .catch(next);
+}
 
-const validateAction = async (req, res, next) => {
-	const { project_id, description, notes } = req.body;
-	if (project_id && description && notes) {
-		try {
-			const project = await Project.get(project_id);
-			if (project) {
-				next();
-			} else {
-				res.status(400).json({
-					message: "Please provide an existing project_id",
-				});
-			}
-		} catch (err) {
-			next(err);
-		}
-	} else {
-		res.status(400).json({
-			message: "Please provide description and notes",
-		});
-	}
-};
+async function validateAction3(req, res, next) {
+  if (!req.body.notes || !req.body.description || !req.body.project_id) {
+    res.status(400).json({
+      message: "You cannot post this new project",
+    });
+  } else {
+    next();
+  }
+}
+
+async function validateAction(req, res, next) {
+  if (!req.body.notes && !req.body.description && !req.body.project_id && !req.body.completed) {
+    res.status(400).json({
+      message: "You cannot post this new project",
+    });
+  } else {
+    next();
+  }
+}
+
+async function validateIdExists(req, res, next) {
+  if(!req.body.project_id){
+    res.json({
+      message:  "This project id does not belong to an existing project "
+    })
+  } else {
+    next()
+  }
+}
 
 module.exports = {
-	checkDatabase,
-	validateAction,
+  validateActionId,
+  validateAction,
+  validateIdExists,
+  validateAction3
 };

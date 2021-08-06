@@ -1,61 +1,66 @@
 const express = require("express");
-const Project = require("./projects-model");
-
+const Projects = require("./projects-model");
 const router = express.Router();
+const {
+	validateUserId,
+	validateUser,
+	validateUser2,
+} = require("./projects-middleware");
 
-router.get("/api/projects", (req, res, next) => {
-	Project.get()
-		.then((projects) => {
-			if (projects === null) {
-				res.status(404).send([]);
-			} else {
-				res.status(200).json(projects);
-			}
+router.get("/", async (req, res, next) => {
+	try {
+		const projects = await Projects.get();
+		res.json(projects);
+	} catch (err) {
+		res.status(500).json({
+			message: "There are no projects to return",
+		});
+	}
+});
+
+router.get("/:id", validateUserId, async (req, res, next) => {
+	await Projects.get(req.params.id)
+		.then((project) => res.json(project))
+		.catch(next);
+});
+
+router.post("/", validateUserId, validateUser, async (req, res, next) => {
+	const newPost = req.body;
+	await Projects.insert(newPost)
+		.then((post) => {
+			res.json(post);
 		})
-		.catch((err) => next(err));
+		.catch(next);
 });
 
-router.get("/api/projects/:id", (req, res) => {
-	res.status(200).json(req.project);
+router.put("/:id", validateUserId, validateUser2, async (req, res, next) => {
+	try {
+		await Projects.update(req.params.id, req.body);
+		res.status(200).json(req.body);
+	} catch (error) {
+		next(error);
+	}
+});
+//  tried to fix but i cant figure this out feedback neede please and thank you^^^^^
+
+router.delete("/:id", validateUserId, (req, res, next) => {
+	Projects.remove(req.params.id)
+		.then((project) => res.json())
+		.catch(next);
 });
 
-router.get("/:id/actions", (req, res, next) => {
-	Project.getProjectActions(req.params.id)
-		.then((actions) => {
-			res.status(200).json(actions);
-		})
-		.catch((err) => next(err));
+router.get("/:id/actions", validateUserId, (req, res, next) => {
+	Projects.getProjectActions(req.params.id)
+		.then((project) => res.json(project))
+		.catch(next);
 });
 
-// [POST]
-router.post("/api/projects", (req, res, next) => {
-	Project.insert(req.body)
-		.then((project) => {
-			res.status(201).json(project);
-		})
-		.catch((err) => next(err));
-});
-
-// [PUT]
-router.put("/api/projects/:id", (req, res, next) => {
-	Project.update(req.params.id, req.body)
-		.then((project) => {
-			res.status(200).json(project);
-		})
-		.catch((err) => next(err));
-});
-
-// [DELETE]
-router.delete("api/projects/:id", (req, res, next) => {
-	Project.remove(req.params.id)
-		.then(() => {
-			res.status(200).json({ message: "Project deleted" });
-		})
-		.catch((err) => next(err));
-});
-
-router.get("/api/projects/:id/actions", (req, res, next) => {
-	res.status(200).json(req.project);
+router.use((err, req, res, next) => {
+	res.status(err.status || 500).json({
+		custom: "Projects router issue",
+		message: err.message,
+		stack: err.stack,
+	});
 });
 
 module.exports = router;

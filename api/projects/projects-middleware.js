@@ -1,35 +1,46 @@
-const Project = require("./projects-model");
+// add middlewares here related to projects
+const { get } = require("./projects-model");
 
-const checkDatabase = async (req, res, next) => {
-	const id = req.params.id;
+async function validateUserId(req, res, next) {
+  get(req.params.id)
+    .then((project) => {
+      if (project) {
+        req.project = project;
+        next();
+      } else {
+        next({
+          status: 404,
+          message: "user not found",
+        });
+      }
+    })
+    .catch(next);
+}
 
-	try {
-		const project = await Project.get(id);
-		if (project) {
-			req.project = project;
-			next();
-		} else {
-			res.status(404).json({
-				message: `Project with id ${id} not found`,
-			});
-		}
-	} catch (err) {
-		next(err);
-	}
-};
+async function validateUser (req, res, next) {
+    if(!req.body.name || !req.body.description) {
+            next({
+            status: 400,  
+            message: "You cannot post this new project"
+          });    
+    } else {
+        next(); 
+    }
+}
 
-const validateProject = (req, res, next) => {
-	const { name, description } = req.body;
-	if (name && description) {
-		next();
-	} else {
-		res.status(400).json({
-			message: "Please provide a name and description",
-		});
-	}
-};
+async function validateUser2(req, res, next) {
+  if (!req.body.name || !req.body.description || !req.body.completed) {
+    res.status(400).json({
+      message: "You cannot post this new project",
+    });
+  } else {
+    next();
+  }
+}
+
 
 module.exports = {
-	checkDatabase,
-	validateProject,
+  validateUserId,
+  validateUser,
+  validateUser2,
 };
